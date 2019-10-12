@@ -1,3 +1,8 @@
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+
 [Bb]in/
 [Oo]bj/
-[Ll]og/
+artifacts/
