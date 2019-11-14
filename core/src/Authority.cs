@@ -7,7 +7,9 @@ namespace RoleScan
         public string AuthorityHostUri { get => "https://login.microsoftonline.com"; }
         public string TenantId { get; private set; }
         public string AuthorityUri { get => AuthorityHostUri + '/' + TenantId; }
+        
         public string ResourceUri { get => "https://management.core.windows.net/"; }
+        public string GraphUri { get => "https://graph.windows.net/"; }
         public string ClientId { get; private set; }
         public string Secret { get; private set; }
 
