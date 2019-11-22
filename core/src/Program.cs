@@ -64,7 +64,7 @@ namespace RoleScan
             Console.WriteLine("\n" + code.Message + "\n\n");
 
             AuthenticationResult token = await context.AcquireTokenByDeviceCodeAsync(code);
-            
+
             var serviceCredentials = new TokenCredentials(token.AccessToken);
 
             var silentToken = await context.AcquireTokenSilentAsync(authority.GraphUri, authority.ClientId, new UserIdentifier(token.UserInfo.UniqueId, UserIdentifierType.UniqueId));
@@ -146,9 +146,12 @@ namespace RoleScan
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.Write($"{assignees.Count()}");
 
-                    if (assignees.Any()) {
+                    if (assignees.Any())
+                    {
                         ShowMembers(assignees);
-                    } else {
+                    }
+                    else
+                    {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write($"   Deleting...");
 
@@ -170,23 +173,43 @@ namespace RoleScan
             }
         }
 
-        public static void ShowMembers(IEnumerable<RoleAssignment> assignees) {
-            foreach(var member in assignees) {
+        public static void ShowMembers(IEnumerable<RoleAssignment> assignees)
+        {
+            foreach (var member in assignees)
+            {
                 Console.WriteLine();
 
                 Console.ForegroundColor = ConsoleColor.White;
-                if (member.PrincipalType == "ServicePrincipal") {
-                    var service = GetServicePrincipal(member.PrincipalId);
-                    Console.Write($"        - {service.DisplayName} <ServicePrincipal> ");
-                } else if (member.PrincipalType == "Application") {
-                    var service = GetApplication(member.PrincipalId);
-                    Console.Write($"        - {service.DisplayName} <Application> ");
-                } else if (member.PrincipalType == "DirectoryObjectOrGroup") {
-                    var service = GetDirectoryObject(member.PrincipalId);
-                    Console.Write($"        - {service.DisplayName} <Directory Object or Group> ");
-                } else {
-                    var user = GetUser(member.PrincipalId);
-                    Console.Write($"        - {user.DisplayName} <{user.UserPrincipalName}> ");
+                try
+                {
+                    if (member.PrincipalType == "ServicePrincipal")
+                    {
+                        var service = GetServicePrincipal(member.PrincipalId);
+                        Console.Write($"        - {service.DisplayName} <ServicePrincipal> ");
+                    }
+                    else if (member.PrincipalType == "Application")
+                    {
+                        var service = GetApplication(member.PrincipalId);
+                        Console.Write($"        - {service.DisplayName} <Application> ");
+                    }
+                    else if (member.PrincipalType == "DirectoryObjectOrGroup")
+                    {
+                        var service = GetDirectoryObject(member.PrincipalId);
+                        Console.Write($"        - {service.DisplayName} <Directory Object or Group> ");
+                    }
+                    else if (member.PrincipalType == "User")
+                    {
+                        var user = GetUser(member.PrincipalId);
+                        Console.Write($"        - {user.DisplayName} <{user.UserPrincipalName}> ");
+                    }
+                    else
+                    {
+                        Console.Write($"        - Unknown Principal ");
+                    }
+                }
+                catch
+                {
+                    Console.Write($"        - Graph Error ");
                 }
 
                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -203,28 +226,32 @@ namespace RoleScan
             }
         }
 
-        public static User GetUser(string principalId) {
+        public static User GetUser(string principalId)
+        {
             GraphRbacManagementClient graphClient = new GraphRbacManagementClient(_graphCreds);
             graphClient.TenantID = _options.Tenant;
 
             return graphClient.Users.GetAsync(principalId).Result;
         }
 
-        public static ServicePrincipal GetServicePrincipal(string principalId) {
+        public static ServicePrincipal GetServicePrincipal(string principalId)
+        {
             GraphRbacManagementClient graphClient = new GraphRbacManagementClient(_graphCreds);
             graphClient.TenantID = _options.Tenant;
 
             return graphClient.ServicePrincipals.GetAsync(principalId).Result;
         }
 
-        public static Application GetApplication(string principalId) {
+        public static Application GetApplication(string principalId)
+        {
             GraphRbacManagementClient graphClient = new GraphRbacManagementClient(_graphCreds);
             graphClient.TenantID = _options.Tenant;
 
             return graphClient.Applications.GetAsync(principalId).Result;
         }
 
-        public static ADGroup GetDirectoryObject(string principalId) {
+        public static ADGroup GetDirectoryObject(string principalId)
+        {
             GraphRbacManagementClient graphClient = new GraphRbacManagementClient(_graphCreds);
             graphClient.TenantID = _options.Tenant;
 
